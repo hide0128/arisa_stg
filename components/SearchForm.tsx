@@ -3,7 +3,7 @@ import React, { useState, useCallback } from 'react';
 import type { SearchCriteria } from '../types';
 import { MealType, CookingTime } from '../types';
 import { MEAL_TYPE_BUTTON_OPTIONS, COOKING_TIME_BUTTON_OPTIONS, DEFAULT_SERVINGS, MIN_SERVINGS, MAX_SERVINGS } from '../constants';
-import { SearchIcon, UsersIcon } from './Icons'; 
+import { SearchIcon, UsersIcon, ClockIcon, ListIcon } from './Icons'; 
 
 interface SearchFormProps {
   onSearch: (criteria: SearchCriteria) => void;
@@ -78,12 +78,12 @@ export const SearchForm: React.FC<SearchFormProps> = ({ onSearch, isLoading }) =
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8 p-6 bg-white shadow-xl rounded-lg border border-blue-300">
-      <FormSection title="食事の種類">
+      <FormSection title="食事の種類" icon={<ListIcon className="w-5 h-5 text-blue-700" />}>
         <span id="mealType-label" className="sr-only">食事の種類を選択</span>
         {renderButtonSelector(MEAL_TYPE_BUTTON_OPTIONS, criteria.mealType, handleMealTypeChange, 'mealType')}
       </FormSection>
 
-      <FormSection title="調理時間">
+      <FormSection title="調理時間" icon={<ClockIcon className="w-5 h-5 text-blue-700" />}>
         <span id="cookingTime-label" className="sr-only">調理時間を選択</span>
         {renderButtonSelector(COOKING_TIME_BUTTON_OPTIONS, criteria.cookingTime, handleCookingTimeChange, 'cookingTime')}
       </FormSection>
