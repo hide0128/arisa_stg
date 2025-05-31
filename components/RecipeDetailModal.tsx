@@ -3,7 +3,6 @@ import React from 'react';
 import type { Recipe } from '../types';
 import { Modal } from './Modal';
 import { ClockIcon, FireIcon, TagIcon, UsersIcon, SparklesIcon, XMarkIcon, StarIcon, FilledStarIcon, CheckCircleIcon, ChartPieIcon } from './Icons';
-// import { LoadingSpinner } from './LoadingSpinner'; // No longer needed if isLoadingImage is removed
 
 
 interface RecipeDetailModalProps {
@@ -11,7 +10,6 @@ interface RecipeDetailModalProps {
   onClose: () => void;
   onToggleFavorite: (recipe: Recipe) => void;
   isFavorite: boolean;
-  // isLoadingImage?: boolean; // Removed
 }
 
 const DetailSection: React.FC<{ title: string; icon?: React.ReactNode; children: React.ReactNode; className?: string }> = ({ title, icon, children, className }) => (
@@ -48,7 +46,6 @@ export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({ recipe, on
         </div>
 
         <div className="p-5 overflow-y-auto flex-grow">
-          {/* Image section and grid removed, details will now stack */}
           <div className="mb-6 space-y-3">
             {recipe.cookingTimeMinutes && (
               <div className="flex items-center text-lg text-gray-700">
@@ -60,6 +57,12 @@ export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({ recipe, on
               <div className="flex items-center text-lg text-gray-700">
                 <FireIcon className="w-6 h-6 mr-3 text-red-500" />
                 <span>カロリー: 約 {recipe.calories} kcal</span>
+              </div>
+            )}
+            {recipe.servings && ( // Display servings
+              <div className="flex items-center text-lg text-gray-700">
+                <UsersIcon className="w-6 h-6 mr-3 text-purple-500" />
+                <span>対象人数: {recipe.servings}</span>
               </div>
             )}
             {recipe.mainIngredients && recipe.mainIngredients.length > 0 && (

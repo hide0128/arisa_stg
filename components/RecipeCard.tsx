@@ -1,7 +1,7 @@
 
 import React from 'react';
 import type { Recipe } from '../types';
-import { ClockIcon, FireIcon, TagIcon, StarIcon, FilledStarIcon } from './Icons';
+import { ClockIcon, FireIcon, TagIcon, StarIcon, FilledStarIcon, UsersIcon } from './Icons'; // Added UsersIcon
 
 interface RecipeCardProps {
   recipe: Recipe;
@@ -12,7 +12,7 @@ interface RecipeCardProps {
 
 export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onViewDetails, onToggleFavorite, isFavorite }) => {
   const handleFavoriteClick = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent card click when clicking favorite
+    e.stopPropagation(); 
     onToggleFavorite(recipe);
   };
   
@@ -21,19 +21,6 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onViewDetails, o
       onClick={() => onViewDetails(recipe)}
       className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300 ease-in-out cursor-pointer flex flex-col h-full border border-blue-100 hover:border-blue-300"
     >
-      {/* Image section removed */}
-      {/* 
-      <div className="relative">
-        <img 
-          src={recipe.imageUrl || `https://picsum.photos/seed/${encodeURIComponent(recipe.id)}/400/250`} 
-          alt={recipe.name} 
-          className="w-full h-48 object-cover" 
-          onError={(e) => (e.currentTarget.src = `https://picsum.photos/seed/${encodeURIComponent(recipe.id)}/400/250`)}
-        />
-        // Favorite button moved to within text content area or a consistent position
-      </div>
-      */}
-      
       <div className="p-5 flex flex-col flex-grow">
         <div className="flex justify-between items-start mb-2">
           <h3 className="text-xl font-semibold text-blue-700 truncate mr-2 flex-grow" title={recipe.name}>{recipe.name}</h3>
@@ -58,6 +45,12 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onViewDetails, o
             <div className="flex items-center text-gray-500">
               <FireIcon className="w-4 h-4 mr-2 text-red-500" />
               <span>カロリー: 約{recipe.calories}kcal</span>
+            </div>
+          )}
+          {recipe.servings && ( // Display servings
+            <div className="flex items-center text-gray-500">
+              <UsersIcon className="w-4 h-4 mr-2 text-purple-500" /> 
+              <span>対象人数: {recipe.servings}</span>
             </div>
           )}
           {recipe.mainIngredients && recipe.mainIngredients.length > 0 && (

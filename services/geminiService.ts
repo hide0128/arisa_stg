@@ -1,7 +1,7 @@
 
 import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
 import type { SearchCriteria, Recipe, GeminiRecipesResponse } from '../types';
-import { API_KEY, GEMINI_TEXT_MODEL } from '../constants'; // Removed GEMINI_IMAGE_MODEL
+import { API_KEY, GEMINI_TEXT_MODEL } from '../constants';
 
 if (!API_KEY) {
   throw new Error("API_KEY is not defined. Please set the API_KEY environment variable.");
@@ -39,6 +39,7 @@ export const generateRecipes = async (criteria: SearchCriteria): Promise<Omit<Re
       "description": "キャッチーな説明文 (例: ヘルシーで満足感たっぷり！ハーブの香りが食欲をそそる一品です。)",
       "cookingTimeMinutes": 30,
       "calories": 450,
+      "servings": "2人分", // 対象人数を追加
       "mainIngredients": ["鶏むね肉", "パプリカ", "ズッキーニ"],
       "ingredients": [
         {"name": "鶏むね肉", "quantity": "200g"},
@@ -80,6 +81,7 @@ export const generateRecipes = async (criteria: SearchCriteria): Promise<Omit<Re
 - 材料リストは具体的な分量を含めてください。
 - 手順は具体的で分かりやすく、ステップバイステップで記述してください。
 - 栄養情報は推定値で構いません。不明な場合はnullまたは項目自体を省略してください。
+- **対象人数 (servings) も必ず記述してください。例: "2人分", "3-4人分"**
 - アレルギー対応の指示は厳守してください。
 - 提案するレシピは必ず3つにしてください。
 `;
@@ -89,9 +91,9 @@ export const generateRecipes = async (criteria: SearchCriteria): Promise<Omit<Re
       model: GEMINI_TEXT_MODEL,
       contents: prompt,
       config: {
-        responseMimeType: "application/json", // Request JSON output
-        temperature: 0.7, // For some creativity
-        thinkingConfig: { thinkingBudget: 0 } // Add this line to disable thinking
+        responseMimeType: "application/json",
+        temperature: 0.7, 
+        thinkingConfig: { thinkingBudget: 0 }
       }
     });
 
@@ -103,12 +105,12 @@ export const generateRecipes = async (criteria: SearchCriteria): Promise<Omit<Re
       throw new Error("AIからのレシピデータ形式が正しくありません。");
     }
     
-    // Ensure mainIngredients, ingredients, and instructions are always arrays
     const validatedRecipes = parsedData.recipes.map(recipe => ({
       ...recipe,
       mainIngredients: Array.isArray(recipe.mainIngredients) ? recipe.mainIngredients : [],
       ingredients: Array.isArray(recipe.ingredients) ? recipe.ingredients : [],
       instructions: Array.isArray(recipe.instructions) ? recipe.instructions : [],
+      // servings can be null or string, so no specific validation needed here other than being present
     }));
     
     return validatedRecipes;
@@ -121,10 +123,3 @@ export const generateRecipes = async (criteria: SearchCriteria): Promise<Omit<Re
     throw new Error(`Gemini APIとの通信に失敗しました: ${error instanceof Error ? error.message : String(error)}`);
   }
 };
-
-// Removed generateImageForRecipe function
-/*
-export const generateImageForRecipe = async (recipeName: string): Promise<string | null> => {
-  // ... implementation removed ...
-};
-*/
