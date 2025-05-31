@@ -8,7 +8,7 @@ import { Footer } from './components/Footer';
 import { LoadingSpinner } from './components/LoadingSpinner';
 import { FavoriteRecipesModal } from './components/FavoriteRecipesModal';
 import type { SearchCriteria, Recipe } from './types';
-import { generateRecipes } from './services/geminiService'; 
+import { generateRecipes } from './services/geminiService'; // Removed generateImageForRecipe
 import { useLocalStorage } from './hooks/useLocalStorage';
 import {InfoIcon, StarIcon } from './components/Icons';
 
@@ -16,7 +16,8 @@ const App: React.FC = () => {
   const [searchCriteria, setSearchCriteria] = useState<SearchCriteria | null>(null);
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
-  const [isLoading, setIsLoading] = useState(false); 
+  const [isLoading, setIsLoading] = useState(false); // General loading for search
+  // const [isGeneratingImage, setIsGeneratingImage] = useState(false); // Removed
   const [error, setError] = useState<string | null>(null);
   const [favorites, setFavorites] = useLocalStorage<Recipe[]>('favoriteRecipes', []);
   const [isFavoritesModalOpen, setIsFavoritesModalOpen] = useState(false);
@@ -41,6 +42,7 @@ const App: React.FC = () => {
             cookingTimeMinutes: apiRecipeData.cookingTimeMinutes || null,
             calories: apiRecipeData.calories || null,
             mainIngredients: apiRecipeData.mainIngredients || [],
+            // imageUrl: null, // Removed imageUrl
             ingredients: apiRecipeData.ingredients || [],
             instructions: apiRecipeData.instructions || [],
             nutrition: apiRecipeData.nutrition || null,
@@ -49,9 +51,9 @@ const App: React.FC = () => {
           return completeRecipe;
         });
       setRecipes(recipesWithIds);
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
-      setError(err.message || 'レシピの取得に失敗しました。しばらくしてからもう一度お試しください。');
+      setError('レシピの取得に失敗しました。しばらくしてからもう一度お試しください。');
     } finally {
       setIsLoading(false);
     }
@@ -59,6 +61,7 @@ const App: React.FC = () => {
 
   const handleViewDetails = useCallback(async (recipe: Recipe) => {
     setSelectedRecipe(recipe); 
+    // Image generation logic removed
   }, []);
 
 
@@ -72,6 +75,7 @@ const App: React.FC = () => {
       if (isFavorited) {
         return prevFavorites.filter(fav => fav.id !== recipe.id);
       } else {
+        // Recipe object no longer contains imageUrl, so no special handling needed here for it
         return [...prevFavorites, recipe];
       }
     });
@@ -87,11 +91,12 @@ const App: React.FC = () => {
     }
   }, [searchCriteria]);
 
+  // isLoading is now the only main loading state
   const showMainLoadingSpinner = isLoading;
 
 
   return (
-    <div className="min-h-screen flex flex-col bg-sky-50 text-gray-800">
+    <div className="min-h-screen flex flex-col bg-orange-50 text-gray-800">
       <Header onShowFavorites={() => setIsFavoritesModalOpen(true)} favoriteCount={favorites.length} />
       
       <main className="flex-grow container mx-auto p-4 md:p-6 lg:p-8">
@@ -112,9 +117,9 @@ const App: React.FC = () => {
         )}
 
         {showWelcome && !isLoading && !error && recipes.length === 0 && (
-          <div className="mt-10 text-center p-8 bg-white shadow-xl rounded-lg border border-blue-200">
-            <h2 className="text-3xl font-bold text-blue-600 mb-4">AIスマートレシピアシスタントへようこそ！</h2>
-            <p className="text-lg text-gray-700 mb-6">
+          <div className="mt-10 text-center p-8 bg-white shadow-xl rounded-lg border border-orange-200">
+            <h2 className="text-2xl sm:text-3xl font-bold text-orange-600 mb-4">AIスマートレシピアシスタントへようこそ！</h2>
+            <p className="text-base sm:text-lg text-gray-700 mb-6">
               気分や調理時間に合わせて、AIがあなたにぴったりのレシピを提案します。<br/>
               上のフォームから検索条件を入力して、新しい味覚の冒険を始めましょう！
             </p>
@@ -123,8 +128,8 @@ const App: React.FC = () => {
         )}
 
         {!isLoading && !error && !showWelcome && recipes.length === 0 && searchCriteria && (
-           <div className="mt-10 text-center p-8 bg-white shadow-xl rounded-lg border border-blue-200">
-            <h2 className="text-2xl font-semibold text-blue-500 mb-4">レシピが見つかりませんでした</h2>
+           <div className="mt-10 text-center p-8 bg-white shadow-xl rounded-lg border border-orange-200">
+            <h2 className="text-xl sm:text-2xl font-semibold text-orange-500 mb-4">レシピが見つかりませんでした</h2>
             <p className="text-gray-600">
               条件を変更して再度お試しください。
             </p>
@@ -145,7 +150,7 @@ const App: React.FC = () => {
             <button
               onClick={() => handleSearch(searchCriteria)}
               disabled={isLoading}
-              className="px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 disabled:opacity-50"
+              className="px-6 py-3 bg-orange-500 text-white font-semibold rounded-lg shadow-md hover:bg-orange-600 transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-opacity-75 disabled:opacity-50"
             >
               {isLoading ? '検索中...' : '別の提案を見る'}
             </button>
@@ -159,6 +164,7 @@ const App: React.FC = () => {
           onClose={handleCloseModal} 
           onToggleFavorite={toggleFavorite}
           isFavorite={isRecipeFavorite(selectedRecipe.id)}
+          //isLoadingImage prop removed
         />
       )}
 

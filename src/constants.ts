@@ -19,6 +19,8 @@ export const COOKING_TIME_BUTTON_OPTIONS: { value: CookingTime, label: string }[
 ];
 
 export const GEMINI_TEXT_MODEL = 'gemini-2.5-flash-preview-04-17';
+// export const GEMINI_IMAGE_MODEL = 'imagen-3.0-generate-002'; // Removed
 
-// API_KEY is no longer exported from here. It will be accessed via environment variables in the Cloudflare Function.
-// export const API_KEY = process.env.API_KEY;
+// Placeholder for API Key - In a real app, this MUST be handled securely and not hardcoded.
+// For this exercise, we assume process.env.API_KEY is set in the environment.
+// export const API_KEY = process.env.API_KEY; // Commented out to prevent inclusion in frontend bundle
