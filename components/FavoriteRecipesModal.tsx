@@ -45,7 +45,7 @@ export const FavoriteRecipesModal: React.FC<FavoriteRecipesModalProps> = ({
               <p className="text-gray-400 mt-2">気になるレシピを見つけたら星マークをタップしてお気に入りに追加しましょう！</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {favorites.map(recipe => (
                 <RecipeCard
                   key={recipe.id}

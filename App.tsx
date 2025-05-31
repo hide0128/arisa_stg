@@ -119,7 +119,7 @@ const App: React.FC = () => {
 
         {showWelcome && !isLoading && !error && recipes.length === 0 && (
           <div className="mt-10 text-center p-8 bg-white shadow-xl rounded-lg border border-blue-200">
-            <h2 className="text-3xl font-bold text-blue-600 mb-4">{APP_NAME}へようこそ！</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold text-blue-600 mb-4">{APP_NAME}へようこそ！</h2>
             <p className="text-lg text-gray-700 mb-6">
               今日の献立、何にしよう？「{APP_NAME}」で運命の一皿を見つけよう！<br/>
               気分や調理時間、何人前かなどを指定して、ガチャを回してレシピをゲット！

@@ -25,10 +25,10 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onViewDetails, o
       
       <div className="p-5 flex flex-col flex-grow">
         <div className="flex justify-between items-start mb-2">
-          <h3 className="text-xl font-semibold text-blue-700 truncate mr-2 flex-grow" title={recipe.name}>{recipe.name}</h3>
+          <h3 className="text-lg sm:text-xl font-semibold text-blue-700 truncate mr-2 flex-grow" title={recipe.name}>{recipe.name}</h3>
           <button
             onClick={handleFavoriteClick}
-            className="p-1.5 bg-white/80 hover:bg-gray-100 rounded-full shadow-sm transition-colors flex-shrink-0"
+            className="p-2 bg-white/80 hover:bg-gray-100 rounded-full shadow-sm transition-colors flex-shrink-0"
             aria-label={isFavorite ? "お気に入りから削除" : "お気に入りに追加"}
           >
             {isFavorite ? <FilledStarIcon className="w-6 h-6 text-sky-400" /> : <StarIcon className="w-6 h-6 text-sky-400" />}

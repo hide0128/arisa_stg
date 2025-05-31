@@ -1,9 +1,8 @@
-
 import React, { useState, useCallback } from 'react';
 import type { SearchCriteria } from '../types';
 import { MealType, CookingTime } from '../types';
 import { MEAL_TYPE_BUTTON_OPTIONS, COOKING_TIME_BUTTON_OPTIONS, DEFAULT_SERVINGS, MIN_SERVINGS, MAX_SERVINGS } from '../constants';
-import { SearchIcon, UsersIcon, ClockIcon, ListIcon } from './Icons'; 
+import { SearchIcon, UsersIcon, ClockIcon, ListIcon, PlusIcon, MinusIcon } from './Icons'; 
 
 interface SearchFormProps {
   onSearch: (criteria: SearchCriteria) => void;
@@ -27,23 +26,30 @@ export const SearchForm: React.FC<SearchFormProps> = ({ onSearch, isLoading }) =
     setCriteria(prev => ({ ...prev, cookingTime }));
   }, []);
 
-  const handleServingsChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseInt(e.target.value, 10);
-    if (!isNaN(value) && value >= MIN_SERVINGS && value <= MAX_SERVINGS) {
-      setCriteria(prev => ({ ...prev, servings: value }));
-    } else if (e.target.value === "") { 
-        setCriteria(prev => ({ ...prev, servings: undefined }));
-    }
+  const handleDecrementServings = useCallback(() => {
+    setCriteria(prev => ({
+      ...prev,
+      servings: Math.max(MIN_SERVINGS, (prev.servings || DEFAULT_SERVINGS) - 1),
+    }));
+  }, []);
+  
+  const handleIncrementServings = useCallback(() => {
+    setCriteria(prev => ({
+      ...prev,
+      servings: Math.min(MAX_SERVINGS, (prev.servings || DEFAULT_SERVINGS) + 1),
+    }));
   }, []);
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSearch({ ...criteria, servings: criteria.servings || DEFAULT_SERVINGS });
+    // Ensure servings is set, defaulting to DEFAULT_SERVINGS if somehow undefined
+    const servingsToSearch = criteria.servings === undefined ? DEFAULT_SERVINGS : criteria.servings;
+    onSearch({ ...criteria, servings: servingsToSearch });
   };
 
   const FormSection: React.FC<{title: string; children: React.ReactNode, icon?: React.ReactNode}> = ({ title, children, icon }) => (
     <div className="mb-6 p-4 border border-blue-200 rounded-lg bg-white/50 shadow-sm">
-      <h3 className="text-lg font-semibold text-blue-700 mb-3 flex items-center">
+      <h3 className="text-base sm:text-lg font-semibold text-blue-700 mb-3 flex items-center">
         {icon && <span className="mr-2">{icon}</span>}
         {title}
       </h3>
@@ -65,7 +71,7 @@ export const SearchForm: React.FC<SearchFormProps> = ({ onSearch, isLoading }) =
           role="radio"
           aria-checked={selectedValue === option.value}
           onClick={() => onChange(option.value)}
-          className={`px-4 py-2 text-sm font-medium rounded-md border transition-colors duration-150 ease-in-out
+          className={`px-3 sm:px-4 py-2 text-sm font-medium rounded-md border transition-colors duration-150 ease-in-out min-h-[2.5rem] flex items-center justify-center
             ${selectedValue === option.value 
               ? 'bg-blue-500 text-white border-blue-500 shadow-md' 
               : 'bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-300 hover:border-blue-400'}`}
@@ -77,7 +83,7 @@ export const SearchForm: React.FC<SearchFormProps> = ({ onSearch, isLoading }) =
   );
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8 p-6 bg-white shadow-xl rounded-lg border border-blue-300">
+    <form onSubmit={handleSubmit} className="space-y-8 p-4 sm:p-6 bg-white shadow-xl rounded-lg border border-blue-300">
       <FormSection title="食事の種類" icon={<ListIcon className="w-5 h-5 text-blue-700" />}>
         <span id="mealType-label" className="sr-only">食事の種類を選択</span>
         {renderButtonSelector(MEAL_TYPE_BUTTON_OPTIONS, criteria.mealType, handleMealTypeChange, 'mealType')}
@@ -89,20 +95,36 @@ export const SearchForm: React.FC<SearchFormProps> = ({ onSearch, isLoading }) =
       </FormSection>
 
       <FormSection title="何人前？" icon={<UsersIcon className="w-5 h-5 text-blue-700" />}>
-        <div className="flex items-center justify-center space-x-3">
-          <label htmlFor="servings-input" className="text-gray-700 font-medium">人数:</label>
-          <input
-            type="number"
-            id="servings-input"
-            name="servings"
-            value={criteria.servings === undefined ? '' : criteria.servings}
-            onChange={handleServingsChange}
-            min={MIN_SERVINGS}
-            max={MAX_SERVINGS}
-            className="w-20 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-center text-gray-700 bg-white"
-            aria-describedby="servings-description"
-          />
-           <span id="servings-description" className="text-sm text-gray-500">({MIN_SERVINGS}〜{MAX_SERVINGS}人)</span>
+        <div className="flex flex-col items-center">
+          <div className="flex items-center justify-center space-x-2">
+            <button
+              type="button"
+              onClick={handleDecrementServings}
+              disabled={isLoading || (criteria.servings !== undefined && criteria.servings <= MIN_SERVINGS)}
+              className="p-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400"
+              aria-label="人数を1減らす"
+            >
+              <MinusIcon className="w-6 h-6" />
+            </button>
+            <span
+              className="text-xl font-semibold text-blue-700 w-16 h-10 flex items-center justify-center bg-gray-50 border border-gray-300 rounded-md"
+              aria-live="polite"
+              aria-atomic="true"
+              id="servings-value"
+            >
+              {criteria.servings || DEFAULT_SERVINGS}
+            </span>
+            <button
+              type="button"
+              onClick={handleIncrementServings}
+              disabled={isLoading || (criteria.servings !== undefined && criteria.servings >= MAX_SERVINGS)}
+              className="p-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400"
+              aria-label="人数を1増やす"
+            >
+              <PlusIcon className="w-6 h-6" />
+            </button>
+          </div>
+          <p id="servings-description" className="text-sm text-gray-500 mt-2 text-center">({MIN_SERVINGS}〜{MAX_SERVINGS}人)</p>
         </div>
       </FormSection>
       
