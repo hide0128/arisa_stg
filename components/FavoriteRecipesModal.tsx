@@ -21,6 +21,12 @@ export const FavoriteRecipesModal: React.FC<FavoriteRecipesModalProps> = ({
   onToggleFavorite,
   isFavorite,
 }) => {
+
+  const handleViewAndClose = (recipe: Recipe) => {
+    onViewDetails(recipe); // まず詳細表示のためのデータをセット
+    onClose();            // その後お気に入りモーダルを閉じる
+  };
+
   return (
     <Modal isOpen={true} onClose={onClose}>
       <div className="bg-blue-50 dark:bg-slate-800 rounded-lg shadow-xl w-full max-w-4xl mx-auto max-h-[90vh] flex flex-col">
@@ -53,7 +59,7 @@ export const FavoriteRecipesModal: React.FC<FavoriteRecipesModalProps> = ({
                 <RecipeCard
                   key={recipe.id}
                   recipe={recipe}
-                  onViewDetails={onViewDetails}
+                  onViewDetails={handleViewAndClose} // Updated to use the wrapper function
                   onToggleFavorite={onToggleFavorite}
                   isFavorite={isFavorite(recipe.id)}
                   // No specific animationVariants needed here, relies on RecipeCard's default hover/tap
