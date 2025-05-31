@@ -16,18 +16,18 @@ const containerVariants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.2,
+      staggerChildren: 0.06, // Slightly faster stagger
+      delayChildren: 0.1,    // Slightly faster delay for first child
     }
   }
 };
 
 const itemVariants = {
-  hidden: { y: 20, opacity: 0 },
+  hidden: { opacity: 0, scale: 0.95 }, // Start slightly scaled down and transparent
   visible: { 
-    y: 0, 
-    opacity: 1,
-    transition: { type: "spring", stiffness: 100 }
+    opacity: 1, 
+    scale: 1, // Scale to normal size
+    transition: { duration: 0.3, ease: "easeOut" } // Faster, simpler transition
   }
 };
 

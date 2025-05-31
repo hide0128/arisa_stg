@@ -1,5 +1,5 @@
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { SearchForm } from './components/SearchForm';
 import { RecipeList } from './components/RecipeList';
 import { RecipeDetailModal } from './components/RecipeDetailModal';
@@ -24,6 +24,8 @@ const App: React.FC = () => {
   const [isFavoritesModalOpen, setIsFavoritesModalOpen] = useState(false);
   const [showWelcome, setShowWelcome] = useState(true);
   const [isDarkMode, setIsDarkMode] = useLocalStorage<boolean>(DARK_MODE_KEY, false);
+  
+  const recipeListRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (isDarkMode) {
@@ -106,6 +108,15 @@ const App: React.FC = () => {
       setShowWelcome(false);
     }
   }, [searchCriteria]);
+
+  useEffect(() => {
+    if (recipes.length > 0 && !isLoading && !showWelcome && recipeListRef.current) {
+      const timer = setTimeout(() => {
+        recipeListRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100); // Short delay to ensure rendering and animation start
+      return () => clearTimeout(timer);
+    }
+  }, [recipes, isLoading, showWelcome]);
 
   const showMainLoadingSpinner = isLoading;
 
@@ -192,7 +203,12 @@ const App: React.FC = () => {
         </AnimatePresence>
 
         {recipes.length > 0 && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.2 }}>
+          <motion.div 
+            ref={recipeListRef}
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            transition={{ duration: 0.3 }}
+          >
             <RecipeList 
               recipes={recipes} 
               onViewDetails={handleViewDetails} 
