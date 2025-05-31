@@ -8,7 +8,6 @@ export const MEAL_TYPE_BUTTON_OPTIONS: { value: MealType, label: string }[] = [
   { value: MealType.BREAKFAST, label: "朝食" },
   { value: MealType.LUNCH, label: "昼食" },
   { value: MealType.DINNER, label: "夕食" },
-  { value: MealType.DESSERT, label: "デザート" },
 ];
 
 export const COOKING_TIME_BUTTON_OPTIONS: { value: CookingTime, label: string }[] = [
@@ -17,6 +16,11 @@ export const COOKING_TIME_BUTTON_OPTIONS: { value: CookingTime, label: string }[
   { value: CookingTime.UNDER_30, label: "30分以内" },
   { value: CookingTime.UNDER_60, label: "60分以内" },
 ];
+
+export const DEFAULT_SERVINGS = 2;
+export const MIN_SERVINGS = 1;
+export const MAX_SERVINGS = 10;
+
 
 export const GEMINI_TEXT_MODEL = 'gemini-2.5-flash-preview-04-17';
 // export const GEMINI_IMAGE_MODEL = 'imagen-3.0-generate-002'; // Removed

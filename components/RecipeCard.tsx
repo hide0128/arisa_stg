@@ -12,7 +12,7 @@ interface RecipeCardProps {
 
 export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onViewDetails, onToggleFavorite, isFavorite }) => {
   const handleFavoriteClick = (e: React.MouseEvent) => {
-    e.stopPropagation(); 
+    e.stopPropagation(); // Prevent card click when clicking favorite
     onToggleFavorite(recipe);
   };
   
@@ -21,6 +21,8 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onViewDetails, o
       onClick={() => onViewDetails(recipe)}
       className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300 ease-in-out cursor-pointer flex flex-col h-full border border-blue-100 hover:border-blue-300"
     >
+      {/* Image section removed */}
+      
       <div className="p-5 flex flex-col flex-grow">
         <div className="flex justify-between items-start mb-2">
           <h3 className="text-xl font-semibold text-blue-700 truncate mr-2 flex-grow" title={recipe.name}>{recipe.name}</h3>
@@ -47,10 +49,10 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onViewDetails, o
               <span>カロリー: 約{recipe.calories}kcal</span>
             </div>
           )}
-          {recipe.servings && ( // Display servings
+          {recipe.servings && (
             <div className="flex items-center text-gray-500">
-              <UsersIcon className="w-4 h-4 mr-2 text-purple-500" /> 
-              <span>対象人数: {recipe.servings}</span>
+              <UsersIcon className="w-4 h-4 mr-2 text-indigo-500" />
+              <span>約{recipe.servings}人前</span>
             </div>
           )}
           {recipe.mainIngredients && recipe.mainIngredients.length > 0 && (

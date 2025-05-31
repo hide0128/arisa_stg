@@ -8,29 +8,35 @@ import { Footer } from './components/Footer';
 import { LoadingSpinner } from './components/LoadingSpinner';
 import { FavoriteRecipesModal } from './components/FavoriteRecipesModal';
 import type { SearchCriteria, Recipe } from './types';
-import { generateRecipes } from './services/geminiService';
+import { generateRecipes } from './services/geminiService'; // Removed generateImageForRecipe
 import { useLocalStorage } from './hooks/useLocalStorage';
 import {InfoIcon, StarIcon } from './components/Icons';
+import { DEFAULT_SERVINGS } from './constants';
 
 const App: React.FC = () => {
   const [searchCriteria, setSearchCriteria] = useState<SearchCriteria | null>(null);
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // General loading for search
+  // const [isGeneratingImage, setIsGeneratingImage] = useState(false); // Removed
   const [error, setError] = useState<string | null>(null);
   const [favorites, setFavorites] = useLocalStorage<Recipe[]>('favoriteRecipes', []);
   const [isFavoritesModalOpen, setIsFavoritesModalOpen] = useState(false);
   const [showWelcome, setShowWelcome] = useState(true);
 
   const handleSearch = useCallback(async (criteria: SearchCriteria) => {
-    setSearchCriteria(criteria);
+    const criteriaWithDefaultServings = {
+        ...criteria,
+        servings: criteria.servings || DEFAULT_SERVINGS,
+    };
+    setSearchCriteria(criteriaWithDefaultServings);
     setIsLoading(true);
     setError(null);
     setRecipes([]);
     setShowWelcome(false);
 
     try {
-      const fetchedRecipes = await generateRecipes(criteria); 
+      const fetchedRecipes = await generateRecipes(criteriaWithDefaultServings); 
       
       const recipesWithIds: Recipe[] = fetchedRecipes.map(apiRecipeData => {
           const recipeId = crypto.randomUUID();
@@ -40,8 +46,9 @@ const App: React.FC = () => {
             description: apiRecipeData.description || "説明がありません",
             cookingTimeMinutes: apiRecipeData.cookingTimeMinutes || null,
             calories: apiRecipeData.calories || null,
-            servings: apiRecipeData.servings || null, // Add servings mapping
+            servings: apiRecipeData.servings || null, // Added servings
             mainIngredients: apiRecipeData.mainIngredients || [],
+            // imageUrl: null, // Removed imageUrl
             ingredients: apiRecipeData.ingredients || [],
             instructions: apiRecipeData.instructions || [],
             nutrition: apiRecipeData.nutrition || null,
@@ -60,6 +67,7 @@ const App: React.FC = () => {
 
   const handleViewDetails = useCallback(async (recipe: Recipe) => {
     setSelectedRecipe(recipe); 
+    // Image generation logic removed
   }, []);
 
 
@@ -73,6 +81,7 @@ const App: React.FC = () => {
       if (isFavorited) {
         return prevFavorites.filter(fav => fav.id !== recipe.id);
       } else {
+        // Recipe object no longer contains imageUrl, so no special handling needed here for it
         return [...prevFavorites, recipe];
       }
     });
@@ -88,6 +97,7 @@ const App: React.FC = () => {
     }
   }, [searchCriteria]);
 
+  // isLoading is now the only main loading state
   const showMainLoadingSpinner = isLoading;
 
 
@@ -116,7 +126,7 @@ const App: React.FC = () => {
           <div className="mt-10 text-center p-8 bg-white shadow-xl rounded-lg border border-blue-200">
             <h2 className="text-3xl font-bold text-blue-600 mb-4">AIスマートレシピアシスタントへようこそ！</h2>
             <p className="text-lg text-gray-700 mb-6">
-              気分や調理時間に合わせて、AIがあなたにぴったりのレシピを提案します。<br/>
+              気分や調理時間、何人前かなどを指定して、AIがあなたにぴったりのレシピを提案します。<br/>
               上のフォームから検索条件を入力して、新しい味覚の冒険を始めましょう！
             </p>
             <StarIcon className="w-16 h-16 text-sky-400 mx-auto animate-pulse" />
@@ -160,6 +170,7 @@ const App: React.FC = () => {
           onClose={handleCloseModal} 
           onToggleFavorite={toggleFavorite}
           isFavorite={isRecipeFavorite(selectedRecipe.id)}
+          //isLoadingImage prop removed
         />
       )}
 

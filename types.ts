@@ -16,8 +16,9 @@ export interface Recipe {
   description: string;
   cookingTimeMinutes: number | null;
   calories: number | null;
+  servings?: number | null; // Added servings
   mainIngredients: string[];
-  servings?: string | null; // Added servings
+  // imageUrl?: string | null; // Removed image URL
   ingredients: IngredientItem[];
   instructions: string[];
   nutrition?: NutritionInfo | null;
@@ -26,7 +27,7 @@ export interface Recipe {
 
 // Type expected from Gemini API after parsing
 export interface GeminiRecipesResponse {
-  recipes: Omit<Recipe, 'id'>[]; // Gemini won't return id
+  recipes: Omit<Recipe, 'id'>[]; // Gemini won't return id, and imageUrl is removed
 }
 
 export enum MealType {
@@ -34,11 +35,10 @@ export enum MealType {
   BREAKFAST = "朝食",
   LUNCH = "昼食",
   DINNER = "夕食",
-  DESSERT = "デザート",
-  SNACK = "おやつ", 
+  SNACK = "おやつ", // Kept in enum in case of future use, but not in current form
 }
 
-export enum Cuisine { 
+export enum Cuisine { // Kept in enum for potential future use or if API still uses it implicitly
   ANY = "指定なし",
   JAPANESE = "和食",
   WESTERN = "洋食",
@@ -57,10 +57,10 @@ export enum CookingTime {
   UNDER_15 = "15分以内",
   UNDER_30 = "30分以内",
   UNDER_60 = "60分以内",
-  OVER_60 = "じっくり(60分以上)", 
+  OVER_60 = "じっくり(60分以上)", // Kept in enum for potential future use
 }
 
-export enum Allergen { 
+export enum Allergen { // Kept in enum for potential future use
   EGG = "卵",
   DAIRY = "乳製品",
   WHEAT = "小麦",
@@ -70,7 +70,7 @@ export enum Allergen {
   PEANUTS = "落花生",
 }
 
-export enum HealthPurposeTag { 
+export enum HealthPurposeTag { // Kept in enum for potential future use
   HEALTHY = "ヘルシー",
   DIET = "ダイエット向け",
   KIDS = "子供向け",
@@ -85,4 +85,5 @@ export enum HealthPurposeTag {
 export interface SearchCriteria {
   mealType: MealType;
   cookingTime: CookingTime;
+  servings?: number; // Added servings
 }

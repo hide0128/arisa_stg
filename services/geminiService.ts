@@ -1,7 +1,7 @@
 
 import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
 import type { SearchCriteria, Recipe, GeminiRecipesResponse } from '../types';
-import { API_KEY, GEMINI_TEXT_MODEL } from '../constants';
+import { API_KEY, GEMINI_TEXT_MODEL, DEFAULT_SERVINGS } from '../constants'; // Removed GEMINI_IMAGE_MODEL
 
 if (!API_KEY) {
   throw new Error("API_KEY is not defined. Please set the API_KEY environment variable.");
@@ -26,9 +26,11 @@ function parseJsonFromMarkdown(markdownString: string): any {
 
 
 export const generateRecipes = async (criteria: SearchCriteria): Promise<Omit<Recipe, 'id'>[]> => {
+  const servings = criteria.servings || DEFAULT_SERVINGS;
   const prompt = `
 あなたは経験豊富なシェフであり、スマートなレシピ提案アシスタントです。
 以下の条件に合う、創造的で美味しく、家庭で作りやすいレシピを3つ提案してください。
+レシピの材料は指定された人数分（今回は${servings}人前）に調整してください。
 
 出力は必ずJSON形式で、以下の厳密な構造に従ってください:
 \`\`\`json
@@ -39,14 +41,14 @@ export const generateRecipes = async (criteria: SearchCriteria): Promise<Omit<Re
       "description": "キャッチーな説明文 (例: ヘルシーで満足感たっぷり！ハーブの香りが食欲をそそる一品です。)",
       "cookingTimeMinutes": 30,
       "calories": 450,
-      "servings": "2人分", // 対象人数を追加
+      "servings": ${servings}, 
       "mainIngredients": ["鶏むね肉", "パプリカ", "ズッキーニ"],
       "ingredients": [
-        {"name": "鶏むね肉", "quantity": "200g"},
-        {"name": "パプリカ (赤・黄)", "quantity": "各1/2個"},
-        {"name": "ズッキーニ", "quantity": "1/2本"},
-        {"name": "オリーブオイル", "quantity": "大さじ1"},
-        {"name": "乾燥ハーブミックス（オレガノ、バジルなど）", "quantity": "小さじ1"},
+        {"name": "鶏むね肉", "quantity": "${servings * 100}g"}, 
+        {"name": "パプリカ (赤・黄)", "quantity": "各${servings / 2}個"},
+        {"name": "ズッキーニ", "quantity": "${servings / 2}本"},
+        {"name": "オリーブオイル", "quantity": "大さじ${servings * 0.5}"},
+        {"name": "乾燥ハーブミックス（オレガノ、バジルなど）", "quantity": "小さじ${servings * 0.5}"},
         {"name": "塩", "quantity": "少々"},
         {"name": "黒こしょう", "quantity": "少々"}
       ],
@@ -72,18 +74,19 @@ export const generateRecipes = async (criteria: SearchCriteria): Promise<Omit<Re
 - 食事の種類: ${criteria.mealType}
 - 料理ジャンル: 指定なし
 - 調理時間: ${criteria.cookingTime}
+- 人数: ${servings}人前
 - アレルギー対応 (これらの食材は使用しないでください): 特になし
 - 健康・目的別タグ: 特になし
 - その他キーワード: 特になし
 
 注意事項:
 - 各レシピはユニークで、多様性のある提案を心がけてください。
-- 材料リストは具体的な分量を含めてください。
+- 材料リストは具体的な分量を含めてください。分量は${servings}人前を基準にしてください。
 - 手順は具体的で分かりやすく、ステップバイステップで記述してください。
 - 栄養情報は推定値で構いません。不明な場合はnullまたは項目自体を省略してください。
-- **対象人数 (servings) も必ず記述してください。例: "2人分", "3-4人分"**
 - アレルギー対応の指示は厳守してください。
 - 提案するレシピは必ず3つにしてください。
+- `+"`servings`"+`フィールドには必ず調理する人数（今回は${servings}）を数値で入れてください。
 `;
 
   try {
@@ -91,9 +94,8 @@ export const generateRecipes = async (criteria: SearchCriteria): Promise<Omit<Re
       model: GEMINI_TEXT_MODEL,
       contents: prompt,
       config: {
-        responseMimeType: "application/json",
-        temperature: 0.7, 
-        thinkingConfig: { thinkingBudget: 0 }
+        responseMimeType: "application/json", // Request JSON output
+        temperature: 0.7, // For some creativity
       }
     });
 
@@ -105,12 +107,13 @@ export const generateRecipes = async (criteria: SearchCriteria): Promise<Omit<Re
       throw new Error("AIからのレシピデータ形式が正しくありません。");
     }
     
+    // Ensure mainIngredients, ingredients, and instructions are always arrays
     const validatedRecipes = parsedData.recipes.map(recipe => ({
       ...recipe,
       mainIngredients: Array.isArray(recipe.mainIngredients) ? recipe.mainIngredients : [],
       ingredients: Array.isArray(recipe.ingredients) ? recipe.ingredients : [],
       instructions: Array.isArray(recipe.instructions) ? recipe.instructions : [],
-      // servings can be null or string, so no specific validation needed here other than being present
+      servings: typeof recipe.servings === 'number' ? recipe.servings : servings, // Ensure servings is a number
     }));
     
     return validatedRecipes;
@@ -123,3 +126,10 @@ export const generateRecipes = async (criteria: SearchCriteria): Promise<Omit<Re
     throw new Error(`Gemini APIとの通信に失敗しました: ${error instanceof Error ? error.message : String(error)}`);
   }
 };
+
+// Removed generateImageForRecipe function
+/*
+export const generateImageForRecipe = async (recipeName: string): Promise<string | null> => {
+  // ... implementation removed ...
+};
+*/

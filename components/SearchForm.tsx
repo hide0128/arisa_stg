@@ -2,8 +2,8 @@
 import React, { useState, useCallback } from 'react';
 import type { SearchCriteria } from '../types';
 import { MealType, CookingTime } from '../types';
-import { MEAL_TYPE_BUTTON_OPTIONS, COOKING_TIME_BUTTON_OPTIONS } from '../constants';
-import { SearchIcon } from './Icons';
+import { MEAL_TYPE_BUTTON_OPTIONS, COOKING_TIME_BUTTON_OPTIONS, DEFAULT_SERVINGS, MIN_SERVINGS, MAX_SERVINGS } from '../constants';
+import { SearchIcon, UsersIcon } from './Icons'; // Added UsersIcon
 
 interface SearchFormProps {
   onSearch: (criteria: SearchCriteria) => void;
@@ -13,6 +13,7 @@ interface SearchFormProps {
 const initialCriteria: SearchCriteria = {
   mealType: MealType.ANY,
   cookingTime: CookingTime.ANY,
+  servings: DEFAULT_SERVINGS,
 };
 
 export const SearchForm: React.FC<SearchFormProps> = ({ onSearch, isLoading }) => {
@@ -25,15 +26,28 @@ export const SearchForm: React.FC<SearchFormProps> = ({ onSearch, isLoading }) =
   const handleCookingTimeChange = useCallback((cookingTime: CookingTime) => {
     setCriteria(prev => ({ ...prev, cookingTime }));
   }, []);
+
+  const handleServingsChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(e.target.value, 10);
+    if (!isNaN(value) && value >= MIN_SERVINGS && value <= MAX_SERVINGS) {
+      setCriteria(prev => ({ ...prev, servings: value }));
+    } else if (e.target.value === "") { // Allow clearing the input, will default or be handled by validation
+        setCriteria(prev => ({ ...prev, servings: undefined }));
+    }
+  }, []);
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSearch(criteria);
+    // Ensure servings has a default if undefined
+    onSearch({ ...criteria, servings: criteria.servings || DEFAULT_SERVINGS });
   };
 
-  const FormSection: React.FC<{title: string; children: React.ReactNode}> = ({ title, children }) => (
+  const FormSection: React.FC<{title: string; children: React.ReactNode, icon?: React.ReactNode}> = ({ title, children, icon }) => (
     <div className="mb-6 p-4 border border-blue-200 rounded-lg bg-white/50 shadow-sm">
-      <h3 className="text-lg font-semibold text-blue-700 mb-3">{title}</h3>
+      <h3 className="text-lg font-semibold text-blue-700 mb-3 flex items-center">
+        {icon && <span className="mr-2">{icon}</span>}
+        {title}
+      </h3>
       {children}
     </div>
   );
@@ -73,6 +87,24 @@ export const SearchForm: React.FC<SearchFormProps> = ({ onSearch, isLoading }) =
       <FormSection title="調理時間">
         <span id="cookingTime-label" className="sr-only">調理時間を選択</span>
         {renderButtonSelector(COOKING_TIME_BUTTON_OPTIONS, criteria.cookingTime, handleCookingTimeChange, 'cookingTime')}
+      </FormSection>
+
+      <FormSection title="何人前？" icon={<UsersIcon className="w-5 h-5 text-blue-700" />}>
+        <div className="flex items-center justify-center space-x-3">
+          <label htmlFor="servings-input" className="text-gray-700 font-medium">人数:</label>
+          <input
+            type="number"
+            id="servings-input"
+            name="servings"
+            value={criteria.servings === undefined ? '' : criteria.servings}
+            onChange={handleServingsChange}
+            min={MIN_SERVINGS}
+            max={MAX_SERVINGS}
+            className="w-20 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-center text-gray-700 bg-white"
+            aria-describedby="servings-description"
+          />
+           <span id="servings-description" className="text-sm text-gray-500">({MIN_SERVINGS}〜{MAX_SERVINGS}人)</span>
+        </div>
       </FormSection>
       
       <div className="text-center pt-4">

@@ -3,6 +3,7 @@ import React from 'react';
 import type { Recipe } from '../types';
 import { Modal } from './Modal';
 import { ClockIcon, FireIcon, TagIcon, UsersIcon, SparklesIcon, XMarkIcon, StarIcon, FilledStarIcon, CheckCircleIcon, ChartPieIcon } from './Icons';
+// import { LoadingSpinner } from './LoadingSpinner'; // No longer needed if isLoadingImage is removed
 
 
 interface RecipeDetailModalProps {
@@ -10,6 +11,7 @@ interface RecipeDetailModalProps {
   onClose: () => void;
   onToggleFavorite: (recipe: Recipe) => void;
   isFavorite: boolean;
+  // isLoadingImage?: boolean; // Removed
 }
 
 const DetailSection: React.FC<{ title: string; icon?: React.ReactNode; children: React.ReactNode; className?: string }> = ({ title, icon, children, className }) => (
@@ -46,6 +48,7 @@ export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({ recipe, on
         </div>
 
         <div className="p-5 overflow-y-auto flex-grow">
+          {/* Image section and grid removed, details will now stack */}
           <div className="mb-6 space-y-3">
             {recipe.cookingTimeMinutes && (
               <div className="flex items-center text-lg text-gray-700">
@@ -59,10 +62,10 @@ export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({ recipe, on
                 <span>カロリー: 約 {recipe.calories} kcal</span>
               </div>
             )}
-            {recipe.servings && ( // Display servings
+            {recipe.servings && (
               <div className="flex items-center text-lg text-gray-700">
-                <UsersIcon className="w-6 h-6 mr-3 text-purple-500" />
-                <span>対象人数: {recipe.servings}</span>
+                <UsersIcon className="w-6 h-6 mr-3 text-indigo-500" />
+                <span>分量: 約 {recipe.servings} 人前</span>
               </div>
             )}
             {recipe.mainIngredients && recipe.mainIngredients.length > 0 && (
@@ -91,6 +94,7 @@ export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({ recipe, on
 
 
           <DetailSection title="材料リスト" icon={<UsersIcon className="w-6 h-6 text-blue-500" />} className="border-t border-gray-200 pt-6">
+             {recipe.servings && <p className="mb-2 text-sm text-gray-500">（約{recipe.servings}人前の材料）</p>}
             <ul className="space-y-1.5 list-none text-gray-700">
               {recipe.ingredients.map((item, index) => (
                 <li key={index} className="ml-4 p-2 bg-blue-50/50 rounded-md border border-blue-100 flex justify-between items-center">
