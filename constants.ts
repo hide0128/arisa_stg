@@ -1,7 +1,7 @@
 
 import { MealType, CookingTime } from './types';
 
-export const APP_NAME = "AIスマートレシピアシスタント";
+export const APP_NAME = "めしガチャ";
 
 export const MEAL_TYPE_BUTTON_OPTIONS: { value: MealType, label: string }[] = [
   { value: MealType.ANY, label: "指定なし" },
@@ -23,7 +23,6 @@ export const MAX_SERVINGS = 10;
 
 
 export const GEMINI_TEXT_MODEL = 'gemini-2.5-flash-preview-04-17';
-// export const GEMINI_IMAGE_MODEL = 'imagen-3.0-generate-002'; // Removed
 
 // Placeholder for API Key - In a real app, this MUST be handled securely and not hardcoded.
 // For this exercise, we assume process.env.API_KEY is set in the environment.

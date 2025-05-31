@@ -3,7 +3,7 @@ import React, { useState, useCallback } from 'react';
 import type { SearchCriteria } from '../types';
 import { MealType, CookingTime } from '../types';
 import { MEAL_TYPE_BUTTON_OPTIONS, COOKING_TIME_BUTTON_OPTIONS, DEFAULT_SERVINGS, MIN_SERVINGS, MAX_SERVINGS } from '../constants';
-import { SearchIcon, UsersIcon } from './Icons'; // Added UsersIcon
+import { SearchIcon, UsersIcon } from './Icons'; 
 
 interface SearchFormProps {
   onSearch: (criteria: SearchCriteria) => void;
@@ -31,14 +31,13 @@ export const SearchForm: React.FC<SearchFormProps> = ({ onSearch, isLoading }) =
     const value = parseInt(e.target.value, 10);
     if (!isNaN(value) && value >= MIN_SERVINGS && value <= MAX_SERVINGS) {
       setCriteria(prev => ({ ...prev, servings: value }));
-    } else if (e.target.value === "") { // Allow clearing the input, will default or be handled by validation
+    } else if (e.target.value === "") { 
         setCriteria(prev => ({ ...prev, servings: undefined }));
     }
   }, []);
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Ensure servings has a default if undefined
     onSearch({ ...criteria, servings: criteria.servings || DEFAULT_SERVINGS });
   };
 
@@ -112,10 +111,10 @@ export const SearchForm: React.FC<SearchFormProps> = ({ onSearch, isLoading }) =
           type="submit"
           disabled={isLoading}
           className="w-full md:w-auto px-8 py-4 bg-gradient-to-r from-blue-500 to-sky-500 text-white font-bold text-lg rounded-lg shadow-lg hover:from-blue-600 hover:to-sky-600 transition-all duration-150 ease-in-out focus:outline-none focus:ring-4 focus:ring-blue-300 focus:ring-opacity-75 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center"
-          aria-label="AIにレシピを提案してもらう"
+          aria-label="ガチャを回してレシピを提案してもらう"
         >
           <SearchIcon className="h-6 w-6 mr-2" />
-          {isLoading ? 'AIが検索中...' : 'AIにレシピを提案してもらう'}
+          {isLoading ? 'ガチャ回転中...' : 'ガチャを回す！'}
         </button>
       </div>
     </form>

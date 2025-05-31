@@ -8,17 +8,16 @@ import { Footer } from './components/Footer';
 import { LoadingSpinner } from './components/LoadingSpinner';
 import { FavoriteRecipesModal } from './components/FavoriteRecipesModal';
 import type { SearchCriteria, Recipe } from './types';
-import { generateRecipes } from './services/geminiService'; // Removed generateImageForRecipe
+import { generateRecipes } from './services/geminiService';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import {InfoIcon, StarIcon } from './components/Icons';
-import { DEFAULT_SERVINGS } from './constants';
+import { DEFAULT_SERVINGS, APP_NAME } from './constants';
 
 const App: React.FC = () => {
   const [searchCriteria, setSearchCriteria] = useState<SearchCriteria | null>(null);
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
-  const [isLoading, setIsLoading] = useState(false); // General loading for search
-  // const [isGeneratingImage, setIsGeneratingImage] = useState(false); // Removed
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [favorites, setFavorites] = useLocalStorage<Recipe[]>('favoriteRecipes', []);
   const [isFavoritesModalOpen, setIsFavoritesModalOpen] = useState(false);
@@ -46,9 +45,8 @@ const App: React.FC = () => {
             description: apiRecipeData.description || "説明がありません",
             cookingTimeMinutes: apiRecipeData.cookingTimeMinutes || null,
             calories: apiRecipeData.calories || null,
-            servings: apiRecipeData.servings || null, // Added servings
+            servings: apiRecipeData.servings || null,
             mainIngredients: apiRecipeData.mainIngredients || [],
-            // imageUrl: null, // Removed imageUrl
             ingredients: apiRecipeData.ingredients || [],
             instructions: apiRecipeData.instructions || [],
             nutrition: apiRecipeData.nutrition || null,
@@ -67,7 +65,6 @@ const App: React.FC = () => {
 
   const handleViewDetails = useCallback(async (recipe: Recipe) => {
     setSelectedRecipe(recipe); 
-    // Image generation logic removed
   }, []);
 
 
@@ -81,7 +78,6 @@ const App: React.FC = () => {
       if (isFavorited) {
         return prevFavorites.filter(fav => fav.id !== recipe.id);
       } else {
-        // Recipe object no longer contains imageUrl, so no special handling needed here for it
         return [...prevFavorites, recipe];
       }
     });
@@ -97,7 +93,6 @@ const App: React.FC = () => {
     }
   }, [searchCriteria]);
 
-  // isLoading is now the only main loading state
   const showMainLoadingSpinner = isLoading;
 
 
@@ -108,7 +103,7 @@ const App: React.FC = () => {
       <main className="flex-grow container mx-auto p-4 md:p-6 lg:p-8">
         <SearchForm onSearch={handleSearch} isLoading={isLoading} />
 
-        {showMainLoadingSpinner && <LoadingSpinner message="AIがレシピを考案中です..." />}
+        {showMainLoadingSpinner && <LoadingSpinner message="ガチャを回しています..." />}
         
         {error && (
           <div className="mt-6 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-md shadow-md" role="alert">
@@ -124,10 +119,10 @@ const App: React.FC = () => {
 
         {showWelcome && !isLoading && !error && recipes.length === 0 && (
           <div className="mt-10 text-center p-8 bg-white shadow-xl rounded-lg border border-blue-200">
-            <h2 className="text-3xl font-bold text-blue-600 mb-4">AIスマートレシピアシスタントへようこそ！</h2>
+            <h2 className="text-3xl font-bold text-blue-600 mb-4">{APP_NAME}へようこそ！</h2>
             <p className="text-lg text-gray-700 mb-6">
-              気分や調理時間、何人前かなどを指定して、AIがあなたにぴったりのレシピを提案します。<br/>
-              上のフォームから検索条件を入力して、新しい味覚の冒険を始めましょう！
+              今日の献立、何にしよう？「{APP_NAME}」で運命の一皿を見つけよう！<br/>
+              気分や調理時間、何人前かなどを指定して、ガチャを回してレシピをゲット！
             </p>
             <StarIcon className="w-16 h-16 text-sky-400 mx-auto animate-pulse" />
           </div>
@@ -158,7 +153,7 @@ const App: React.FC = () => {
               disabled={isLoading}
               className="px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 disabled:opacity-50"
             >
-              {isLoading ? '検索中...' : '別の提案を見る'}
+              {isLoading ? '検索中...' : '別のレシピをガチャる！'}
             </button>
           </div>
         )}
@@ -170,7 +165,6 @@ const App: React.FC = () => {
           onClose={handleCloseModal} 
           onToggleFavorite={toggleFavorite}
           isFavorite={isRecipeFavorite(selectedRecipe.id)}
-          //isLoadingImage prop removed
         />
       )}
 
