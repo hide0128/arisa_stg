@@ -1,22 +1,21 @@
 {
-  "name": "arisa",
-  "version": "1.0.0",
-  "description": "AI Smart Recipe Assistant hosted on Cloudflare Pages",
-  "main": "src/index.tsx",
+  "name": "stg_aiスマートレシピアシスタント-(ai-smart-recipe-assistant)",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
   "scripts": {
-    "build": "npm run copy:assets && npm run build:js:prod",
-    "build:js:prod": "esbuild src/index.tsx --bundle --outfile=dist/index.js --format=esm --platform=browser --jsx=automatic --loader:.ts=tsx --define:process.env.NODE_ENV='\"production\"' --external:react --external:react-dom/client --external:react/jsx-runtime --minify",
-    "build:js:dev": "esbuild src/index.tsx --bundle --outfile=dist/index.js --format=esm --platform=browser --jsx=automatic --loader:.ts=tsx --define:process.env.NODE_ENV='\"development\"' --external:react --external:react-dom/client --external:react/jsx-runtime --sourcemap",
-    "copy:assets": "mkdir -p dist && cp src/index.html dist/index.html && cp src/metadata.json dist/metadata.json",
-    "watch:js": "npm run build:js:dev -- --watch",
-    "serve": "live-server dist --port=8080 --open=./index.html",
-    "dev": "npm run copy:assets && npm run watch:js & npm run serve"
-  },
-  "devDependencies": {
-    "esbuild": "^0.20.0",
-    "live-server": "^1.2.2"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
     "@google/genai": "^1.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "typescript": "~5.7.2",
+    "vite": "^6.2.0"
   }
 }

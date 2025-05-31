@@ -1,0 +1,6 @@
+{
+  "name": "stg_AIスマートレシピアシスタント (AI Smart Recipe Assistant)",
+  "description": "An AI-powered recipe assistant that suggests recipes based on ingredients, meal types, cuisine preferences, cooking time, allergens, and health goals. Generates creative recipes and can even visualize them.",
+  "requestFramePermissions": [],
+  "prompt": ""
+}
