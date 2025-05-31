@@ -91,7 +91,7 @@ const App: React.FC = () => {
 
 
   return (
-    <div className="min-h-screen flex flex-col bg-emerald-50 text-gray-800">
+    <div className="min-h-screen flex flex-col bg-slate-100 text-slate-800">
       <Header onShowFavorites={() => setIsFavoritesModalOpen(true)} favoriteCount={favorites.length} />
       
       <main className="flex-grow container mx-auto p-4 md:p-6 lg:p-8">
@@ -112,9 +112,9 @@ const App: React.FC = () => {
         )}
 
         {showWelcome && !isLoading && !error && recipes.length === 0 && (
-          <div className="mt-10 text-center p-8 bg-white shadow-xl rounded-lg border border-emerald-200">
-            <h2 className="text-3xl font-bold text-green-600 mb-4">AIスマートレシピアシスタントへようこそ！</h2>
-            <p className="text-lg text-gray-700 mb-6">
+          <div className="mt-10 text-center p-8 bg-white shadow-xl rounded-lg border border-slate-200">
+            <h2 className="text-3xl font-bold text-blue-600 mb-4">AIスマートレシピアシスタントへようこそ！</h2>
+            <p className="text-lg text-slate-700 mb-6">
               気分や調理時間に合わせて、AIがあなたにぴったりのレシピを提案します。<br/>
               上のフォームから検索条件を入力して、新しい味覚の冒険を始めましょう！
             </p>
@@ -123,9 +123,9 @@ const App: React.FC = () => {
         )}
 
         {!isLoading && !error && !showWelcome && recipes.length === 0 && searchCriteria && (
-           <div className="mt-10 text-center p-8 bg-white shadow-xl rounded-lg border border-emerald-200">
-            <h2 className="text-2xl font-semibold text-green-500 mb-4">レシピが見つかりませんでした</h2>
-            <p className="text-gray-600">
+           <div className="mt-10 text-center p-8 bg-white shadow-xl rounded-lg border border-slate-200">
+            <h2 className="text-2xl font-semibold text-slate-600 mb-4">レシピが見つかりませんでした</h2>
+            <p className="text-slate-600">
               条件を変更して再度お試しください。
             </p>
           </div>
@@ -145,7 +145,7 @@ const App: React.FC = () => {
             <button
               onClick={() => handleSearch(searchCriteria)}
               disabled={isLoading}
-              className="px-6 py-3 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-green-600 transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75 disabled:opacity-50"
+              className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 disabled:opacity-50"
             >
               {isLoading ? '検索中...' : '別の提案を見る'}
             </button>
