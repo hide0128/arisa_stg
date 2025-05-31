@@ -91,6 +91,7 @@ export const generateRecipes = async (criteria: SearchCriteria): Promise<Omit<Re
       config: {
         responseMimeType: "application/json", // Request JSON output
         temperature: 0.7, // For some creativity
+        thinkingConfig: { thinkingBudget: 0 } // Add this line to disable thinking
       }
     });
 
