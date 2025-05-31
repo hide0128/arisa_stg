@@ -1,6 +1,5 @@
-
 {
-  "name": "めしガチャ",
+  "name": "stg_めしガチャ",
   "description": "今日の献立はガチャで決めよう！「めしガチャ」があなたにピッタリのレシピをランダム提案します。",
   "requestFramePermissions": [],
   "prompt": ""

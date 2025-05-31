@@ -27,3 +27,5 @@ export const GEMINI_TEXT_MODEL = 'gemini-2.5-flash-preview-04-17';
 // Placeholder for API Key - In a real app, this MUST be handled securely and not hardcoded.
 // For this exercise, we assume process.env.API_KEY is set in the environment.
 export const API_KEY = process.env.API_KEY;
+
+export const DARK_MODE_KEY = 'めしガチャ-darkMode';

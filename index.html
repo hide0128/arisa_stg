@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="HandheldFriendly" content="true">
+  <meta name="theme-color" content="#3b82f6">
+  <link rel="manifest" href="/manifest.json">
   <title>めしガチャ</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,7 +14,22 @@
   <style>
     body {
       font-family: 'Noto Sans JP', sans-serif;
+      @apply bg-blue-50 text-gray-800 transition-colors duration-300 ease-in-out;
     }
+    /* Basic dark mode styles for body if needed, primarily handled by Tailwind dark: prefixes */
+    html.dark body {
+      @apply bg-slate-900 text-gray-100;
+    }
+
+    /* Custom focus-visible outline for better accessibility */
+    :focus-visible {
+      outline: 2px solid rgb(59 130 246 / 0.7); /* Equivalent to focus:ring-blue-500 with opacity */
+      outline-offset: 2px;
+    }
+    html.dark :focus-visible {
+      outline: 2px solid rgb(96 165 250 / 0.7); /* Equivalent to focus:ring-sky-400 with opacity */
+    }
+
   </style>
 <script type="importmap">
 {
@@ -20,9 +37,34 @@
     "react": "https://esm.sh/react@^19.1.0",
     "react-dom/": "https://esm.sh/react-dom@^19.1.0/",
     "react/": "https://esm.sh/react@^19.1.0/",
-    "@google/genai": "https://esm.sh/@google/genai@^1.2.0"
+    "@google/genai": "https://esm.sh/@google/genai@^1.2.0",
+    "framer-motion": "https://esm.sh/framer-motion@^11.0.0"
   }
 }
+</script>
+<script>
+  // Tailwind CSS Dark Mode Configuration
+  tailwind.config = {
+    darkMode: 'class', // or 'media'
+    theme: {
+      extend: {
+        // You can extend your theme here if needed
+      }
+    }
+  }
+
+  // Register Service Worker for PWA
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/service-worker.js')
+        .then(registration => {
+          console.log('ServiceWorker registration successful with scope: ', registration.scope);
+        })
+        .catch(error => {
+          console.log('ServiceWorker registration failed: ', error);
+        });
+    });
+  }
 </script>
 <link rel="stylesheet" href="/index.css">
 </head>

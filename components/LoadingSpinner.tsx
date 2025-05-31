@@ -14,11 +14,11 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ message = "шкнуБ
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex flex-col items-center justify-center z-[100]">
+    <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 flex flex-col items-center justify-center z-[100]">
       <div 
-        className={`animate-spin rounded-full ${sizeClasses[size]} border-blue-500 border-t-transparent`}
+        className={`animate-spin rounded-full ${sizeClasses[size]} border-blue-500 dark:border-sky-500 border-t-transparent`}
       ></div>
-      {message && <p className="mt-4 text-white text-lg font-semibold">{message}</p>}
+      {message && <p className="mt-4 text-white dark:text-gray-200 text-lg font-semibold">{message}</p>}
     </div>
   );
 };

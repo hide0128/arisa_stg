@@ -11,7 +11,8 @@ import type { SearchCriteria, Recipe } from './types';
 import { generateRecipes } from './services/geminiService';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import {InfoIcon, StarIcon } from './components/Icons';
-import { DEFAULT_SERVINGS, APP_NAME } from './constants';
+import { DEFAULT_SERVINGS, APP_NAME, DARK_MODE_KEY } from './constants';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const App: React.FC = () => {
   const [searchCriteria, setSearchCriteria] = useState<SearchCriteria | null>(null);
@@ -22,6 +23,19 @@ const App: React.FC = () => {
   const [favorites, setFavorites] = useLocalStorage<Recipe[]>('favoriteRecipes', []);
   const [isFavoritesModalOpen, setIsFavoritesModalOpen] = useState(false);
   const [showWelcome, setShowWelcome] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useLocalStorage<boolean>(DARK_MODE_KEY, false);
+
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [isDarkMode]);
+
+  const toggleDarkMode = () => {
+    setIsDarkMode(prevMode => !prevMode);
+  };
 
   const handleSearch = useCallback(async (criteria: SearchCriteria) => {
     const criteriaWithDefaultServings = {
@@ -95,88 +109,141 @@ const App: React.FC = () => {
 
   const showMainLoadingSpinner = isLoading;
 
+  const messageVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+    exit: { opacity: 0, y: -20, transition: { duration: 0.3 } },
+  };
 
   return (
-    <div className="min-h-screen flex flex-col bg-blue-50 text-gray-800">
-      <Header onShowFavorites={() => setIsFavoritesModalOpen(true)} favoriteCount={favorites.length} />
+    <div className="min-h-screen flex flex-col dark:bg-slate-900 transition-colors duration-300 ease-in-out">
+      <Header 
+        onShowFavorites={() => setIsFavoritesModalOpen(true)} 
+        favoriteCount={favorites.length}
+        isDarkMode={isDarkMode}
+        onToggleDarkMode={toggleDarkMode}
+      />
       
       <main className="flex-grow container mx-auto p-4 md:p-6 lg:p-8">
         <SearchForm onSearch={handleSearch} isLoading={isLoading} />
 
         {showMainLoadingSpinner && <LoadingSpinner message="ガチャを回しています..." />}
         
-        {error && (
-          <div className="mt-6 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-md shadow-md" role="alert">
-            <div className="flex">
-              <div className="py-1"><InfoIcon className="h-6 w-6 text-red-500 mr-3" /></div>
-              <div>
-                <p className="font-bold">エラーが発生しました</p>
-                <p className="text-sm">{error}</p>
+        <AnimatePresence>
+          {error && (
+            <motion.div
+              variants={messageVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              className="mt-6 bg-red-100 dark:bg-red-900/30 border-l-4 border-red-500 dark:border-red-700 text-red-700 dark:text-red-300 p-4 rounded-md shadow-md"
+              role="alert"
+            >
+              <div className="flex">
+                <div className="py-1"><InfoIcon className="h-6 w-6 text-red-500 dark:text-red-400 mr-3" /></div>
+                <div>
+                  <p className="font-bold">エラーが発生しました</p>
+                  <p className="text-sm">{error}</p>
+                </div>
               </div>
-            </div>
-          </div>
-        )}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        {showWelcome && !isLoading && !error && recipes.length === 0 && (
-          <div className="mt-10 text-center p-8 bg-white shadow-xl rounded-lg border border-blue-200">
-            <h2 className="text-2xl sm:text-3xl font-bold text-blue-600 mb-4">{APP_NAME}へようこそ！</h2>
-            <p className="text-lg text-gray-700 mb-6">
-              今日の献立、何にしよう？「{APP_NAME}」で運命の一皿を見つけよう！<br/>
-              気分や調理時間、何人前かなどを指定して、ガチャを回してレシピをゲット！
-            </p>
-            <StarIcon className="w-16 h-16 text-sky-400 mx-auto animate-pulse" />
-          </div>
-        )}
+        <AnimatePresence mode="wait">
+          {showWelcome && !isLoading && !error && recipes.length === 0 && (
+            <motion.div
+              key="welcome"
+              variants={messageVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              className="mt-10 text-center p-8 bg-white dark:bg-slate-800 shadow-xl rounded-lg border border-blue-200 dark:border-slate-700"
+            >
+              <h2 className="text-2xl sm:text-3xl font-bold text-blue-600 dark:text-sky-400 mb-4">{APP_NAME}へようこそ！</h2>
+              <p className="text-lg text-gray-700 dark:text-gray-300 mb-6">
+                今日の献立、何にしよう？「{APP_NAME}」で運命の一皿を見つけよう！<br/>
+                気分や調理時間、何人前かなどを指定して、ガチャを回してレシピをゲット！
+              </p>
+              <motion.div
+                animate={{ scale: [1, 1.1, 1], opacity: [0.7, 1, 0.7] }}
+                transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+              >
+                <StarIcon className="w-16 h-16 text-sky-400 dark:text-sky-500 mx-auto" />
+              </motion.div>
+            </motion.div>
+          )}
 
-        {!isLoading && !error && !showWelcome && recipes.length === 0 && searchCriteria && (
-           <div className="mt-10 text-center p-8 bg-white shadow-xl rounded-lg border border-blue-200">
-            <h2 className="text-2xl font-semibold text-blue-500 mb-4">レシピが見つかりませんでした</h2>
-            <p className="text-gray-600">
-              条件を変更して再度お試しください。
-            </p>
-          </div>
-        )}
+          {!isLoading && !error && !showWelcome && recipes.length === 0 && searchCriteria && (
+             <motion.div
+                key="no-recipes"
+                variants={messageVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                className="mt-10 text-center p-8 bg-white dark:bg-slate-800 shadow-xl rounded-lg border border-blue-200 dark:border-slate-700"
+              >
+              <h2 className="text-2xl font-semibold text-blue-500 dark:text-sky-500 mb-4">レシピが見つかりませんでした</h2>
+              <p className="text-gray-600 dark:text-gray-400">
+                条件を変更して再度お試しください。
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {recipes.length > 0 && (
-          <RecipeList 
-            recipes={recipes} 
-            onViewDetails={handleViewDetails} 
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.2 }}>
+            <RecipeList 
+              recipes={recipes} 
+              onViewDetails={handleViewDetails} 
+              onToggleFavorite={toggleFavorite}
+              isFavorite={isRecipeFavorite}
+            />
+          </motion.div>
+        )}
+
+        {searchCriteria && recipes.length > 0 && !isLoading && (
+          <motion.div 
+            className="mt-8 text-center"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+          >
+            <motion.button
+              onClick={() => handleSearch(searchCriteria)}
+              disabled={isLoading}
+              className="px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 dark:bg-sky-600 dark:hover:bg-sky-700 transition duration-150 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-opacity-75 disabled:opacity-50"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              {isLoading ? '検索中...' : '別のレシピをガチャる！'}
+            </motion.button>
+          </motion.div>
+        )}
+      </main>
+
+      <AnimatePresence>
+        {selectedRecipe && (
+          <RecipeDetailModal 
+            recipe={selectedRecipe} 
+            onClose={handleCloseModal} 
+            onToggleFavorite={toggleFavorite}
+            isFavorite={isRecipeFavorite(selectedRecipe.id)}
+          />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {isFavoritesModalOpen && (
+          <FavoriteRecipesModal
+            favorites={favorites}
+            onClose={() => setIsFavoritesModalOpen(false)}
+            onViewDetails={handleViewDetails}
             onToggleFavorite={toggleFavorite}
             isFavorite={isRecipeFavorite}
           />
         )}
-
-        {searchCriteria && recipes.length > 0 && !isLoading && (
-          <div className="mt-8 text-center">
-            <button
-              onClick={() => handleSearch(searchCriteria)}
-              disabled={isLoading}
-              className="px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 disabled:opacity-50"
-            >
-              {isLoading ? '検索中...' : '別のレシピをガチャる！'}
-            </button>
-          </div>
-        )}
-      </main>
-
-      {selectedRecipe && (
-        <RecipeDetailModal 
-          recipe={selectedRecipe} 
-          onClose={handleCloseModal} 
-          onToggleFavorite={toggleFavorite}
-          isFavorite={isRecipeFavorite(selectedRecipe.id)}
-        />
-      )}
-
-      {isFavoritesModalOpen && (
-        <FavoriteRecipesModal
-          favorites={favorites}
-          onClose={() => setIsFavoritesModalOpen(false)}
-          onViewDetails={handleViewDetails}
-          onToggleFavorite={toggleFavorite}
-          isFavorite={isRecipeFavorite}
-        />
-      )}
+      </AnimatePresence>
       <Footer />
     </div>
   );
