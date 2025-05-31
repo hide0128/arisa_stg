@@ -62,7 +62,8 @@ export const generateRecipes = async (criteria: SearchCriteria): Promise<Omit<Re
     const responseData = await response.json(); // Expecting JSON response from the Function
 
     // The function should ideally return a clean JSON object.
-    // For now, assume the function returns a direct JSON object as per the implementation of functions/api/recipe.ts
+    // If it might return a string (e.g., markdown wrapped), parse it.
+    // For now, assume the function returns a direct JSON object.
     const parsedData: GeminiRecipesResponse = responseData;
     
     if (!parsedData.recipes || !Array.isArray(parsedData.recipes)) {
