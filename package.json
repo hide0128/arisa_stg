@@ -10,7 +10,8 @@
     "copy:assets": "mkdir -p dist && cp src/index.html dist/index.html && cp src/metadata.json dist/metadata.json",
     "watch:js": "npm run build:js:dev -- --watch",
     "serve": "live-server dist --port=8080 --open=./index.html",
-    "dev": "npm run copy:assets && npm run watch:js & npm run serve"
+    "dev": "npm run copy:assets && npm run watch:js & npm run serve",
+    "clean:source-root": "echo 'Cleaning up old root-level source files and directories (excluding metadata.json)...' && rm -f index.tsx index.html App.tsx types.ts constants.ts && rm -rf components services hooks && echo 'Cleanup complete. These files/directories were duplicates of those in the src/ folder.'"
   },
   "devDependencies": {
     "esbuild": "^0.20.0",
