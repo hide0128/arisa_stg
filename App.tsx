@@ -26,6 +26,7 @@ const App: React.FC = () => {
   const [isDarkMode, setIsDarkMode] = useLocalStorage<boolean>(DARK_MODE_KEY, false);
   
   const recipeListRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     if (isDarkMode) {
@@ -110,10 +111,18 @@ const App: React.FC = () => {
   }, [searchCriteria]);
 
   useEffect(() => {
-    if (recipes.length > 0 && !isLoading && !showWelcome && recipeListRef.current) {
+    if (recipes.length > 0 && !isLoading && !showWelcome && recipeListRef.current && headerRef.current) {
       const timer = setTimeout(() => {
-        recipeListRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 100); // Short delay to ensure rendering and animation start
+        if (recipeListRef.current && headerRef.current) { // Double check refs are still valid
+          const headerHeight = headerRef.current.offsetHeight;
+          const recipeListTop = recipeListRef.current.offsetTop;
+          
+          window.scrollTo({
+            top: recipeListTop - headerHeight,
+            behavior: 'smooth'
+          });
+        }
+      }, 300); // Adjusted delay to allow for rendering and animation
       return () => clearTimeout(timer);
     }
   }, [recipes, isLoading, showWelcome]);
@@ -129,6 +138,7 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col dark:bg-slate-900 transition-colors duration-300 ease-in-out">
       <Header 
+        ref={headerRef}
         onShowFavorites={() => setIsFavoritesModalOpen(true)} 
         favoriteCount={favorites.length}
         isDarkMode={isDarkMode}

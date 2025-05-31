@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { APP_NAME } from '../constants';
 import { StarIcon, SparklesIcon, SunIcon, MoonIcon } from './Icons';
 import { motion } from 'framer-motion';
@@ -11,7 +11,7 @@ interface HeaderProps {
   onToggleDarkMode: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ onShowFavorites, favoriteCount, isDarkMode, onToggleDarkMode }) => {
+export const Header = forwardRef<HTMLElement, HeaderProps>(({ onShowFavorites, favoriteCount, isDarkMode, onToggleDarkMode }, ref) => {
   const iconVariants = {
     hidden: { scale: 0, opacity: 0 },
     visible: { scale: 1, opacity: 1, transition: { type: 'spring', stiffness: 260, damping: 20, delay: 0.2 } },
@@ -24,6 +24,7 @@ export const Header: React.FC<HeaderProps> = ({ onShowFavorites, favoriteCount, 
 
   return (
     <motion.header 
+      ref={ref}
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ type: 'spring', stiffness: 100, damping: 20 }}
@@ -77,4 +78,6 @@ export const Header: React.FC<HeaderProps> = ({ onShowFavorites, favoriteCount, 
       </div>
     </motion.header>
   );
-};
+});
+
+Header.displayName = 'Header';
