@@ -22,7 +22,7 @@ export const MIN_SERVINGS = 1;
 export const MAX_SERVINGS = 10;
 
 
-export const GEMINI_TEXT_MODEL = 'gemini-2.5-flash-preview-04-17';
+export const GEMINI_TEXT_MODEL = 'gemini-2.5-flash';
 
 // Placeholder for API Key - In a real app, this MUST be handled securely and not hardcoded.
 // For this exercise, we assume process.env.API_KEY is set in the environment.
